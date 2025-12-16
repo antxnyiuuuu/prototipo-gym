@@ -6,12 +6,27 @@ const credentials = {
 
 const userData = {
     name: 'Juan Pérez',
+    email: 'juan.perez@email.com',
+    phone: '+593 99 123 4567',
     age: 28,
     weight: 75,
     height: 175,
     goal: 'Ganar masa muscular',
     plan: 'intermediate',
-    lastUpdate: '2024-01-15'
+    lastUpdate: '2024-01-15',
+    subscription: {
+        status: 'active',
+        planName: 'Plan Premium',
+        startDate: '2024-01-01',
+        nextPayment: '2024-02-01',
+        monthlyPrice: 50
+    },
+    paymentHistory: [
+        { date: '2024-01-01', amount: 50, method: 'Tarjeta', status: 'Pagado' },
+        { date: '2023-12-01', amount: 50, method: 'Efectivo', status: 'Pagado' },
+        { date: '2023-11-01', amount: 50, method: 'Tarjeta', status: 'Pagado' },
+        { date: '2023-10-01', amount: 50, method: 'Transferencia', status: 'Pagado' }
+    ]
 };
 
 const workoutPlans = {
@@ -95,54 +110,61 @@ function logout() {
 const userPages = {
     home: () => `
         <div class="fade-in">
-            <h2 class="mb-3" style="font-size: 1.8rem; font-weight: 700;">¡Hola, ${userData.name}! 👋</h2>
-            <p class="mb-4" style="color: var(--text-secondary);">Bienvenido a tu espacio de entrenamiento</p>
+            <!-- Welcome Header -->
+            <div style="padding: var(--spacing-lg) 0; margin-bottom: var(--spacing-lg);">
+                <h2 style="font-size: 1.8rem; font-weight: 700; color: var(--text-primary); margin: 0 0 var(--spacing-xs) 0;">¡Hola, ${userData.name}! 👋</h2>
+                <p style="color: var(--text-secondary); margin: 0;">Bienvenido de vuelta</p>
+            </div>
 
-            <div class="card mb-4" style="background: var(--primary-gradient); border: none;">
-                <div style="padding: var(--spacing-lg);">
-                    <h3 style="color: white; font-size: 1.3rem; margin-bottom: var(--spacing-sm);">Tu Objetivo</h3>
-                    <p style="color: rgba(255,255,255,0.9); font-size: 1.1rem; margin: 0;">${userData.goal}</p>
+            <!-- Goal Card -->
+            <div class="card mb-4" style="border-left: 3px solid var(--accent-purple);">
+                <div style="display: flex; align-items: center; gap: var(--spacing-md);">
+                    <div style="font-size: 2rem;">🎯</div>
+                    <div style="flex: 1;">
+                        <p style="color: var(--text-secondary); font-size: 0.85rem; margin: 0 0 0.25rem 0;">Tu Objetivo</p>
+                        <h3 style="color: var(--text-primary); font-size: 1.1rem; margin: 0; font-weight: 600;">${userData.goal}</h3>
+                    </div>
                 </div>
             </div>
 
-            <div class="stats-grid mb-4">
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: var(--primary-gradient);">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                            <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
-                        </svg>
-                    </div>
-                    <div class="stat-value">${userData.weight}kg</div>
-                    <div class="stat-label">Peso Actual</div>
+            <!-- Stats Grid -->
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--spacing-md); margin-bottom: var(--spacing-lg);">
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 2.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.25rem;">${userData.weight}</div>
+                    <div style="font-size: 0.85rem; color: var(--text-secondary);">Peso (kg)</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: var(--success-gradient);">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-                        </svg>
-                    </div>
-                    <div class="stat-value">${userData.height}cm</div>
-                    <div class="stat-label">Altura</div>
+                <div class="card" style="text-align: center;">
+                    <div style="font-size: 2.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.25rem;">${userData.height}</div>
+                    <div style="font-size: 0.85rem; color: var(--text-secondary);">Altura (cm)</div>
                 </div>
             </div>
 
+            <!-- Weekly Summary -->
             <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Resumen Semanal</h3>
+                <h3 style="font-size: 1.1rem; font-weight: 600; color: var(--text-primary); margin: 0 0 var(--spacing-lg) 0;">Resumen Semanal</h3>
+                
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: var(--spacing-md) 0; border-bottom: 1px solid var(--glass-border);">
+                    <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                        <div style="width: 8px; height: 8px; background: var(--accent-green); border-radius: 50%;"></div>
+                        <span style="color: var(--text-primary);">Entrenamientos</span>
+                    </div>
+                    <span style="font-weight: 600; color: var(--text-primary);">5/7</span>
                 </div>
-                <div class="card-body">
-                    <div class="flex-between mb-3">
-                        <span style="color: var(--text-secondary);">Entrenamientos completados</span>
-                        <span style="color: var(--accent-green); font-weight: 600;">5/7</span>
+                
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: var(--spacing-md) 0; border-bottom: 1px solid var(--glass-border);">
+                    <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                        <div style="width: 8px; height: 8px; background: var(--accent-purple); border-radius: 50%;"></div>
+                        <span style="color: var(--text-primary);">Calorías promedio</span>
                     </div>
-                    <div class="flex-between mb-3">
-                        <span style="color: var(--text-secondary);">Calorías promedio</span>
-                        <span style="font-weight: 600;">1,950 kcal</span>
+                    <span style="font-weight: 600; color: var(--text-primary);">1,950</span>
+                </div>
+                
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: var(--spacing-md) 0;">
+                    <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                        <div style="width: 8px; height: 8px; background: var(--accent-green); border-radius: 50%;"></div>
+                        <span style="color: var(--text-primary);">Cambio de peso</span>
                     </div>
-                    <div class="flex-between">
-                        <span style="color: var(--text-secondary);">Cambio de peso</span>
-                        <span style="color: var(--accent-green); font-weight: 600;">-2kg</span>
-                    </div>
+                    <span style="font-weight: 600; color: var(--accent-green);">-2kg</span>
                 </div>
             </div>
         </div>
@@ -438,68 +460,58 @@ const userPages = {
 const adminPages = {
     dashboard: () => `
         <div class="fade-in">
-            <h2 class="mb-3" style="font-size: 1.8rem; font-weight: 700;">Dashboard</h2>
-            <p class="mb-4" style="color: var(--text-secondary);">Vista general del gimnasio</p>
+            <!-- Welcome Header -->
+            <div style="padding: var(--spacing-lg) 0; margin-bottom: var(--spacing-lg);">
+                <h2 style="font-size: 1.8rem; font-weight: 700; color: var(--text-primary); margin: 0 0 var(--spacing-xs) 0;">Panel de Administración</h2>
+                <p style="color: var(--text-secondary); margin: 0;">Vista general del gimnasio</p>
+            </div>
 
-            <div class="stats-grid mb-4">
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: var(--primary-gradient);">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="9" cy="7" r="4"></circle>
-                        </svg>
-                    </div>
-                    <div class="stat-value">${adminUsers.length}</div>
-                    <div class="stat-label">Total Usuarios</div>
+            <!-- Stats Grid -->
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--spacing-md); margin-bottom: var(--spacing-lg);">
+                <div class="card" style="text-align: center; border-top: 3px solid var(--accent-purple);">
+                    <div style="font-size: 2.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.25rem;">${adminUsers.length}</div>
+                    <div style="font-size: 0.85rem; color: var(--text-secondary);">Total Usuarios</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: var(--success-gradient);">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-                        </svg>
-                    </div>
-                    <div class="stat-value">${adminUsers.filter(u => u.status === 'active').length}</div>
-                    <div class="stat-label">Activos</div>
+                <div class="card" style="text-align: center; border-top: 3px solid var(--accent-green);">
+                    <div style="font-size: 2.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.25rem;">${adminUsers.filter(u => u.status === 'active').length}</div>
+                    <div style="font-size: 0.85rem; color: var(--text-secondary);">Usuarios Activos</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: var(--warning-gradient);">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <line x1="12" y1="8" x2="12" y2="12"></line>
-                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                        </svg>
-                    </div>
-                    <div class="stat-value">${adminUsers.filter(u => u.status === 'pending').length}</div>
-                    <div class="stat-label">Pendientes</div>
+                <div class="card" style="text-align: center; border-top: 3px solid var(--warning-color);">
+                    <div style="font-size: 2.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.25rem;">${adminUsers.filter(u => u.status === 'pending').length}</div>
+                    <div style="font-size: 0.85rem; color: var(--text-secondary);">Pagos Pendientes</div>
                 </div>
             </div>
 
+            <!-- Activity Card -->
             <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Actividad Reciente</h3>
-                </div>
-                <div class="card-body">
-                    <div class="list-item">
-                        <div class="list-item-icon" style="background: var(--success-gradient);">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                                <polyline points="20 6 9 17 4 12"></polyline>
-                            </svg>
-                        </div>
-                        <div class="list-item-content">
-                            <div class="list-item-title">Nuevo usuario registrado</div>
-                            <div class="list-item-subtitle">María García - Hace 2 horas</div>
+                <h3 style="font-size: 1.1rem; font-weight: 600; color: var(--text-primary); margin: 0 0 var(--spacing-lg) 0;">Actividad Reciente</h3>
+                
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: var(--spacing-md) 0; border-bottom: 1px solid var(--glass-border);">
+                    <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                        <div style="width: 8px; height: 8px; background: var(--accent-green); border-radius: 50%;"></div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--text-primary); font-size: 0.95rem;">Nuevo usuario registrado</div>
+                            <div style="font-size: 0.8rem; color: var(--text-secondary);">María García • Hace 2 horas</div>
                         </div>
                     </div>
-                    <div class="list-item">
-                        <div class="list-item-icon" style="background: var(--primary-gradient);">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
-                                <line x1="1" y1="10" x2="23" y2="10"></line>
-                            </svg>
+                </div>
+                
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: var(--spacing-md) 0; border-bottom: 1px solid var(--glass-border);">
+                    <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                        <div style="width: 8px; height: 8px; background: var(--accent-purple); border-radius: 50%;"></div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--text-primary); font-size: 0.95rem;">Pago recibido</div>
+                            <div style="font-size: 0.8rem; color: var(--text-secondary);">Juan Pérez • $50 • Hace 5 horas</div>
                         </div>
-                        <div class="list-item-content">
-                            <div class="list-item-title">Pago recibido</div>
-                            <div class="list-item-subtitle">Juan Pérez - $50 - Hace 5 horas</div>
+                    </div>
+                </div>
+                
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: var(--spacing-md) 0;">
+                    <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                        <div style="width: 8px; height: 8px; background: var(--accent-purple); border-radius: 50%;"></div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--text-primary); font-size: 0.95rem;">Rutina asignada</div>
+                            <div style="font-size: 0.8rem; color: var(--text-secondary);">Carlos López • Plan Intermedio • Hace 1 día</div>
                         </div>
                     </div>
                 </div>
@@ -861,22 +873,6 @@ function addMeasurement() {
 function viewWeekWorkout(dayIndex) {
     const workout = workoutPlans.intermediate[dayIndex];
     alert(`${workout.day} - ${workout.focus}\\n\\n` +
-        'Ejercicios:\\n' +
-        workout.exercises.map((ex, i) => `${i + 1}. ${ex}`).join('\\n'));
-}
-
-function addNewUser() {
-    alert('Agregar Nuevo Usuario\\n\\n' +
-        'Esta funcionalidad permitiría:\\n' +
-        '- Registrar datos personales\\n' +
-        '- Asignar plan inicial\\n' +
-        '- Configurar plan de alimentación\\n' +
-        '- Establecer objetivos');
-}
-
-function viewRoutine(type) {
-    const plan = workoutPlans[type];
-    alert(`Plan ${type === 'beginner' ? 'Principiante' : 'Intermedio'}\\n\\n` +
         plan.map(day => `${day.day}: ${day.focus}\\n${day.exercises.join(', ')}`).join('\\n\\n'));
 }
 
@@ -924,6 +920,288 @@ function registerPayment(userId) {
             alert('Pago registrado exitosamente');
         }
     }
+}
+
+// ==================== USER PROFILE MENU ====================
+function showUserProfile() {
+    const statusColor = userData.subscription.status === 'active' ? 'var(--accent-green)' : 'var(--warning-color)';
+    const statusText = userData.subscription.status === 'active' ? 'Activa' : 'Pendiente';
+
+    const content = `
+        <div style="display: grid; gap: var(--spacing-lg);">
+            <!-- User Info -->
+            <div style="text-align: center; padding: var(--spacing-md); background: var(--primary-gradient); border-radius: var(--radius-lg); color: white;">
+                <div style="width: 80px; height: 80px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin: 0 auto var(--spacing-md); backdrop-filter: blur(10px);">
+                    ${userData.name.charAt(0).toUpperCase()}
+                </div>
+                <h3 style="margin: 0 0 var(--spacing-xs) 0; font-size: 1.5rem;">${userData.name}</h3>
+                <p style="margin: 0; opacity: 0.9; font-size: 0.9rem;">${userData.email}</p>
+            </div>
+
+            <!-- Personal Data -->
+            <div style="background: var(--glass-bg); padding: var(--spacing-md); border-radius: var(--radius-md); border: 1px solid var(--glass-border);">
+                <h4 style="margin: 0 0 var(--spacing-md) 0; color: var(--text-primary); display: flex; align-items: center; gap: var(--spacing-sm);">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    Datos Personales
+                </h4>
+                <div style="display: grid; gap: var(--spacing-sm);">
+                    <div style="display: flex; justify-content: space-between; padding: var(--spacing-sm) 0; border-bottom: 1px solid var(--glass-border);">
+                        <span style="color: var(--text-secondary);">Teléfono</span>
+                        <span style="font-weight: 600; color: var(--text-primary);">${userData.phone}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: var(--spacing-sm) 0; border-bottom: 1px solid var(--glass-border);">
+                        <span style="color: var(--text-secondary);">Edad</span>
+                        <span style="font-weight: 600; color: var(--text-primary);">${userData.age} años</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: var(--spacing-sm) 0; border-bottom: 1px solid var(--glass-border);">
+                        <span style="color: var(--text-secondary);">Peso</span>
+                        <span style="font-weight: 600; color: var(--text-primary);">${userData.weight} kg</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: var(--spacing-sm) 0;">
+                        <span style="color: var(--text-secondary);">Altura</span>
+                        <span style="font-weight: 600; color: var(--text-primary);">${userData.height} cm</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subscription -->
+            <div style="background: var(--glass-bg); padding: var(--spacing-md); border-radius: var(--radius-md); border: 1px solid var(--glass-border);">
+                <h4 style="margin: 0 0 var(--spacing-md) 0; color: var(--text-primary); display: flex; align-items: center; gap: var(--spacing-sm);">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                        <line x1="1" y1="10" x2="23" y2="10"></line>
+                    </svg>
+                    Suscripción
+                </h4>
+                <div style="display: grid; gap: var(--spacing-sm);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--spacing-sm); background: rgba(102, 126, 234, 0.1); border-radius: var(--radius-sm);">
+                        <span style="color: var(--text-primary); font-weight: 600;">${userData.subscription.planName}</span>
+                        <span style="background: ${statusColor}; color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">${statusText}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: var(--spacing-sm) 0; border-bottom: 1px solid var(--glass-border);">
+                        <span style="color: var(--text-secondary);">Precio mensual</span>
+                        <span style="font-weight: 600; color: var(--accent-green);">$${userData.subscription.monthlyPrice}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: var(--spacing-sm) 0; border-bottom: 1px solid var(--glass-border);">
+                        <span style="color: var(--text-secondary);">Fecha de inicio</span>
+                        <span style="font-weight: 600; color: var(--text-primary);">${userData.subscription.startDate}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: var(--spacing-sm) 0;">
+                        <span style="color: var(--text-secondary);">Próximo pago</span>
+                        <span style="font-weight: 600; color: var(--warning-color);">${userData.subscription.nextPayment}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment History -->
+            <div style="background: var(--glass-bg); padding: var(--spacing-md); border-radius: var(--radius-md); border: 1px solid var(--glass-border);">
+                <h4 style="margin: 0 0 var(--spacing-md) 0; color: var(--text-primary); display: flex; align-items: center; gap: var(--spacing-sm);">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="1" x2="12" y2="23"></line>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                    Historial de Pagos
+                </h4>
+                <div style="display: grid; gap: var(--spacing-xs); max-height: 200px; overflow-y: auto;">
+                    ${userData.paymentHistory.map(payment => `
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--spacing-sm); background: var(--glass-bg); border-radius: var(--radius-sm); border: 1px solid var(--glass-border);">
+                            <div>
+                                <div style="font-weight: 600; color: var(--text-primary); font-size: 0.9rem;">${payment.date}</div>
+                                <div style="color: var(--text-secondary); font-size: 0.8rem;">${payment.method}</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-weight: 700; color: var(--accent-green); font-size: 1rem;">$${payment.amount}</div>
+                                <div style="color: var(--accent-green); font-size: 0.75rem;">✓ ${payment.status}</div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        </div>
+    `;
+
+    showModal('Mi Perfil', content, [
+        {
+            text: 'Editar Perfil',
+            class: 'btn-secondary',
+            onClick: () => {
+                alert('Funcionalidad de editar perfil próximamente');
+            }
+        },
+        {
+            text: 'Cerrar',
+            class: 'btn-primary',
+            onClick: () => { }
+        }
+    ]);
+}
+
+// ==================== ADMIN HELPER FUNCTIONS ====================
+function addNewUser() {
+    const content = `
+        <form id="newUserForm" style="display: grid; gap: var(--spacing-md);">
+            <div class="form-group">
+                <label class="form-label">Nombre Completo *</label>
+                <input type="text" id="newUserName" class="form-input" placeholder="Ej: Carlos Ramírez" required>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-sm);">
+                <div class="form-group">
+                    <label class="form-label">Edad *</label>
+                    <input type="number" id="newUserAge" class="form-input" placeholder="Ej: 25" min="15" max="80" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Peso (kg) *</label>
+                    <input type="number" id="newUserWeight" class="form-input" placeholder="Ej: 70" min="40" max="200" step="0.1" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Altura (cm) *</label>
+                <input type="number" id="newUserHeight" class="form-input" placeholder="Ej: 175" min="140" max="220" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Plan de Entrenamiento *</label>
+                <select id="newUserPlan" class="form-input" required>
+                    <option value="">Selecciona un plan...</option>
+                    <option value="beginner">Principiante</option>
+                    <option value="intermediate">Intermedio</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Estado de Pago *</label>
+                <select id="newUserStatus" class="form-input" required>
+                    <option value="">Selecciona estado...</option>
+                    <option value="active">Activo (Pagado)</option>
+                    <option value="pending">Pendiente</option>
+                </select>
+            </div>
+            
+            <div style="background: rgba(102, 126, 234, 0.1); padding: var(--spacing-sm); border-radius: var(--radius-sm); border-left: 3px solid var(--accent-purple);">
+                <p style="color: var(--text-secondary); font-size: 0.85rem; margin: 0;">
+                    💡 <strong>Nota:</strong> Todos los campos marcados con * son obligatorios.
+                </p>
+            </div>
+        </form>
+    `;
+
+    showModal('Agregar Nuevo Usuario', content, [
+        {
+            text: 'Cancelar',
+            class: 'btn-secondary',
+            onClick: () => { }
+        },
+        {
+            text: 'Guardar Usuario',
+            class: 'btn-primary',
+            onClick: () => {
+                const form = document.getElementById('newUserForm');
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return false;
+                }
+
+                const newUser = {
+                    id: adminUsers.length + 1,
+                    name: document.getElementById('newUserName').value,
+                    age: parseInt(document.getElementById('newUserAge').value),
+                    weight: parseFloat(document.getElementById('newUserWeight').value),
+                    height: parseInt(document.getElementById('newUserHeight').value),
+                    plan: document.getElementById('newUserPlan').value,
+                    status: document.getElementById('newUserStatus').value,
+                    lastPayment: new Date().toISOString().split('T')[0],
+                    nextPayment: (() => {
+                        const next = new Date();
+                        next.setMonth(next.getMonth() + 1);
+                        return next.toISOString().split('T')[0];
+                    })()
+                };
+
+                adminUsers.push(newUser);
+
+                showSuccess('¡Usuario Creado!',
+                    `${newUser.name} ha sido agregado exitosamente al sistema. 🎉`);
+
+                setTimeout(() => {
+                    navigateToAdmin('users');
+                }, 1500);
+            },
+            closeOnClick: false
+        }
+    ]);
+}
+
+function createRoutine() {
+    const content = `
+        <form id="newRoutineForm" style="display: grid; gap: var(--spacing-md);">
+            <div class="form-group">
+                <label class="form-label">Nombre de la Rutina *</label>
+                <input type="text" id="routineName" class="form-input" placeholder="Ej: Plan Avanzado" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Nivel *</label>
+                <select id="routineLevel" class="form-input" required>
+                    <option value="">Selecciona nivel...</option>
+                    <option value="beginner">Principiante</option>
+                    <option value="intermediate">Intermedio</option>
+                    <option value="advanced">Avanzado</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Días por semana *</label>
+                <input type="number" id="routineDays" class="form-input" placeholder="Ej: 5" min="3" max="7" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Descripción</label>
+                <textarea id="routineDescription" class="form-input" rows="3" placeholder="Describe el objetivo de esta rutina..." style="resize: vertical;"></textarea>
+            </div>
+            
+            <div style="background: rgba(102, 126, 234, 0.1); padding: var(--spacing-sm); border-radius: var(--radius-sm); border-left: 3px solid var(--accent-purple);">
+                <p style="color: var(--text-secondary); font-size: 0.85rem; margin: 0;">
+                    💡 <strong>Tip:</strong> Después de crear la rutina, podrás agregar ejercicios específicos para cada día.
+                </p>
+            </div>
+        </form>
+    `;
+
+    showModal('Crear Nueva Rutina', content, [
+        {
+            text: 'Cancelar',
+            class: 'btn-secondary',
+            onClick: () => { }
+        },
+        {
+            text: 'Crear Rutina',
+            class: 'btn-primary',
+            onClick: () => {
+                const form = document.getElementById('newRoutineForm');
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return false;
+                }
+
+                const routineName = document.getElementById('routineName').value;
+                const routineLevel = document.getElementById('routineLevel').value;
+                const routineDays = document.getElementById('routineDays').value;
+
+                showSuccess('¡Rutina Creada!',
+                    `La rutina "${routineName}" ha sido creada exitosamente. 💪`);
+
+                setTimeout(() => {
+                    navigateToAdmin('routines');
+                }, 1500);
+            },
+            closeOnClick: false
+        }
+    ]);
 }
 
 // ==================== INITIALIZATION ====================
