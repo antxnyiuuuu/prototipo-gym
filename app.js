@@ -68,10 +68,11 @@ const progressData = [
     { date: '2024-01-30', weight: 75, chest: 100, waist: 82, arms: 36 }
 ];
 
+
 const adminUsers = [
-    { id: 1, name: 'Juan Pérez', age: 28, weight: 75, height: 175, plan: 'intermediate', status: 'active', lastPayment: '2024-01-01', nextPayment: '2024-02-01' },
-    { id: 2, name: 'María García', age: 25, weight: 60, height: 165, plan: 'beginner', status: 'active', lastPayment: '2024-01-05', nextPayment: '2024-02-05' },
-    { id: 3, name: 'Carlos López', age: 32, weight: 85, height: 180, plan: 'intermediate', status: 'pending', lastPayment: '2023-12-15', nextPayment: '2024-01-15' }
+    { id: 1, name: 'Juan Pérez', age: 28, weight: 75, height: 175, plan: 'intermediate', nutritionPlan: 'balanced', status: 'active', lastPayment: '2024-01-01', nextPayment: '2024-02-01' },
+    { id: 2, name: 'María García', age: 25, weight: 60, height: 165, plan: 'beginner', nutritionPlan: 'weight-loss', status: 'active', lastPayment: '2024-01-05', nextPayment: '2024-02-05' },
+    { id: 3, name: 'Carlos López', age: 32, weight: 85, height: 180, plan: 'intermediate', nutritionPlan: 'muscle-gain', status: 'pending', lastPayment: '2023-12-15', nextPayment: '2024-01-15' }
 ];
 
 // ==================== AUTHENTICATION ====================
@@ -550,6 +551,9 @@ const adminPages = {
                         </div>
                         <div style="display: flex; gap: var(--spacing-sm); margin-top: var(--spacing-md);">
                             <button class="btn btn-secondary btn-small" onclick="viewUserDetail(${user.id})" style="flex: 1;">Ver Detalle</button>
+                            <button class="btn btn-secondary btn-small" onclick="viewUserRoutine(${user.id})" style="flex: 1;">Ver Rutina</button>
+                        </div>
+                        <div style="display: flex; gap: var(--spacing-sm); margin-top: var(--spacing-sm);">
                             <button class="btn btn-secondary btn-small" onclick="editUserAdmin(${user.id})" style="flex: 1;">Editar</button>
                             <button class="btn btn-secondary btn-small" onclick="deleteUser(${user.id})" style="flex: 1;">Eliminar</button>
                         </div>
@@ -1202,6 +1206,348 @@ function createRoutine() {
             closeOnClick: false
         }
     ]);
+}
+
+function addNewUser() {
+    const content = `
+        <form id="newUserForm" style="display: grid; gap: var(--spacing-md);">
+            <div class="form-group">
+                <label class="form-label">Nombre Completo *</label>
+                <input type="text" id="newUserName" class="form-input" placeholder="Ej: Carlos Ramírez" required>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-sm);">
+                <div class="form-group">
+                    <label class="form-label">Edad *</label>
+                    <input type="number" id="newUserAge" class="form-input" placeholder="Ej: 25" min="15" max="80" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Peso (kg) *</label>
+                    <input type="number" id="newUserWeight" class="form-input" placeholder="Ej: 70" min="40" max="200" step="0.1" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Altura (cm) *</label>
+                <input type="number" id="newUserHeight" class="form-input" placeholder="Ej: 175" min="140" max="220" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Plan de Entrenamiento *</label>
+                <select id="newUserPlan" class="form-input" required>
+                    <option value="">Selecciona un plan...</option>
+                    <option value="beginner">Principiante</option>
+                    <option value="intermediate">Intermedio</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Plan Nutricional *</label>
+                <select id="newUserNutrition" class="form-input" required>
+                    <option value="">Selecciona un plan...</option>
+                    <option value="balanced">Balanceado</option>
+                    <option value="weight-loss">Pérdida de Peso</option>
+                    <option value="muscle-gain">Ganancia Muscular</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Estado de Pago *</label>
+                <select id="newUserStatus" class="form-input" required>
+                    <option value="">Selecciona estado...</option>
+                    <option value="active">Activo (Pagado)</option>
+                    <option value="pending">Pendiente</option>
+                </select>
+            </div>
+            
+            <div style="background: rgba(102, 126, 234, 0.1); padding: var(--spacing-sm); border-radius: var(--radius-sm); border-left: 3px solid var(--accent-purple);">
+                <p style="color: var(--text-secondary); font-size: 0.85rem; margin: 0;">
+                    💡 <strong>Nota:</strong> Todos los campos marcados con * son obligatorios.
+                </p>
+            </div>
+        </form>
+    `;
+
+    showModal('Agregar Nuevo Usuario', content, [
+        {
+            text: 'Cancelar',
+            class: 'btn-secondary',
+            onClick: () => { }
+        },
+        {
+            text: 'Guardar Usuario',
+            class: 'btn-primary',
+            onClick: () => {
+                const form = document.getElementById('newUserForm');
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return false;
+                }
+
+                const newUser = {
+                    id: adminUsers.length + 1,
+                    name: document.getElementById('newUserName').value,
+                    age: parseInt(document.getElementById('newUserAge').value),
+                    weight: parseFloat(document.getElementById('newUserWeight').value),
+                    height: parseInt(document.getElementById('newUserHeight').value),
+                    plan: document.getElementById('newUserPlan').value,
+                    nutritionPlan: document.getElementById('newUserNutrition').value,
+                    status: document.getElementById('newUserStatus').value,
+                    lastPayment: new Date().toISOString().split('T')[0],
+                    nextPayment: (() => {
+                        const next = new Date();
+                        next.setMonth(next.getMonth() + 1);
+                        return next.toISOString().split('T')[0];
+                    })()
+                };
+
+                adminUsers.push(newUser);
+
+                showSuccess('¡Usuario Creado!',
+                    `${newUser.name} ha sido agregado exitosamente al sistema. 🎉`);
+
+                setTimeout(() => {
+                    navigateToAdmin('users');
+                }, 1500);
+            },
+            closeOnClick: false
+        }
+    ]);
+}
+
+function viewUserDetail(userId) {
+    const user = adminUsers.find(u => u.id === userId);
+    const content = `
+        <div style="display: grid; gap: var(--spacing-md);">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-sm);">
+                <div>
+                    <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Nombre</div>
+                    <div style="font-weight: 600; color: var(--text-primary);">${user.name}</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Edad</div>
+                    <div style="font-weight: 600; color: var(--text-primary);">${user.age} años</div>
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-sm);">
+                <div>
+                    <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Peso</div>
+                    <div style="font-weight: 600; color: var(--text-primary);">${user.weight} kg</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Altura</div>
+                    <div style="font-weight: 600; color: var(--text-primary);">${user.height} cm</div>
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-sm);">
+                <div>
+                    <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Plan Entrenamiento</div>
+                    <div style="font-weight: 600; color: var(--text-primary);">${user.plan === 'beginner' ? 'Principiante' : 'Intermedio'}</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Plan Nutricional</div>
+                    <div style="font-weight: 600; color: var(--text-primary);">${user.nutritionPlan === 'balanced' ? 'Balanceado' :
+            user.nutritionPlan === 'weight-loss' ? 'Pérdida de Peso' :
+                user.nutritionPlan === 'muscle-gain' ? 'Ganancia Muscular' : 'No asignado'
+        }</div>
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-sm);">
+                <div>
+                    <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Estado</div>
+                    <div style="font-weight: 600; color: ${user.status === 'active' ? 'var(--accent-green)' : 'var(--warning-color)'};">${user.status === 'active' ? 'Activo' : 'Pendiente'}</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Próximo pago</div>
+                    <div style="font-weight: 600; color: var(--text-primary);">${user.nextPayment}</div>
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-sm);">
+                <div>
+                    <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Último pago</div>
+                    <div style="font-weight: 600; color: var(--text-primary);">${user.lastPayment}</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Próximo pago</div>
+                    <div style="font-weight: 600; color: var(--text-primary);">${user.nextPayment}</div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    showModal(`Detalle de Usuario - ${user.name}`, content);
+}
+
+function editUserAdmin(userId) {
+    const user = adminUsers.find(u => u.id === userId);
+
+    const content = `
+        <form id="editUserForm" style="display: grid; gap: var(--spacing-md);">
+            <div class="form-group">
+                <label class="form-label">Nombre Completo *</label>
+                <input type="text" id="editUserName" class="form-input" value="${user.name}" required>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-sm);">
+                <div class="form-group">
+                    <label class="form-label">Edad *</label>
+                    <input type="number" id="editUserAge" class="form-input" value="${user.age}" min="15" max="80" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Peso (kg) *</label>
+                    <input type="number" id="editUserWeight" class="form-input" value="${user.weight}" min="40" max="200" step="0.1" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Altura (cm) *</label>
+                <input type="number" id="editUserHeight" class="form-input" value="${user.height}" min="140" max="220" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Plan de Entrenamiento *</label>
+                <select id="editUserPlan" class="form-input" required>
+                    <option value="beginner" ${user.plan === 'beginner' ? 'selected' : ''}>Principiante</option>
+                    <option value="intermediate" ${user.plan === 'intermediate' ? 'selected' : ''}>Intermedio</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Plan Nutricional *</label>
+                <select id="editUserNutrition" class="form-input" required>
+                    <option value="balanced" ${user.nutritionPlan === 'balanced' ? 'selected' : ''}>Balanceado</option>
+                    <option value="weight-loss" ${user.nutritionPlan === 'weight-loss' ? 'selected' : ''}>Pérdida de Peso</option>
+                    <option value="muscle-gain" ${user.nutritionPlan === 'muscle-gain' ? 'selected' : ''}>Ganancia Muscular</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Estado de Pago *</label>
+                <select id="editUserStatus" class="form-input" required>
+                    <option value="active" ${user.status === 'active' ? 'selected' : ''}>Activo (Pagado)</option>
+                    <option value="pending" ${user.status === 'pending' ? 'selected' : ''}>Pendiente</option>
+                </select>
+            </div>
+            
+            <div style="background: rgba(102, 126, 234, 0.1); padding: var(--spacing-sm); border-radius: var(--radius-sm); border-left: 3px solid var(--accent-purple);">
+                <p style="color: var(--text-secondary); font-size: 0.85rem; margin: 0;">
+                    💡 <strong>Nota:</strong> Los cambios se aplicarán inmediatamente.
+                </p>
+            </div>
+        </form>
+    `;
+
+    showModal(`Editar Usuario - ${user.name}`, content, [
+        {
+            text: 'Cancelar',
+            class: 'btn-secondary',
+            onClick: () => { }
+        },
+        {
+            text: 'Guardar Cambios',
+            class: 'btn-primary',
+            onClick: () => {
+                const form = document.getElementById('editUserForm');
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return false;
+                }
+
+                // Actualizar datos del usuario
+                user.name = document.getElementById('editUserName').value;
+                user.age = parseInt(document.getElementById('editUserAge').value);
+                user.weight = parseFloat(document.getElementById('editUserWeight').value);
+                user.height = parseInt(document.getElementById('editUserHeight').value);
+                user.plan = document.getElementById('editUserPlan').value;
+                user.nutritionPlan = document.getElementById('editUserNutrition').value;
+                user.status = document.getElementById('editUserStatus').value;
+
+                showSuccess('¡Usuario Actualizado!',
+                    `Los datos de ${user.name} han sido actualizados exitosamente. ✅`);
+
+                setTimeout(() => {
+                    navigateToAdmin('users');
+                }, 1500);
+            },
+            closeOnClick: false
+        }
+    ]);
+}
+
+function viewUserRoutine(userId) {
+    const user = adminUsers.find(u => u.id === userId);
+    const routine = workoutPlans[user.plan];
+
+    const content = `
+        <div style="display: grid; gap: var(--spacing-md);">
+            <div style="background: rgba(102, 126, 234, 0.1); padding: var(--spacing-md); border-radius: var(--radius-md); border-left: 3px solid var(--accent-purple);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Plan Actual</div>
+                        <div style="font-weight: 700; color: var(--text-primary); font-size: 1.1rem;">${user.plan === 'beginner' ? 'Principiante' : 'Intermedio'}</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Días por semana</div>
+                        <div style="font-weight: 700; color: var(--accent-purple); font-size: 1.1rem;">${routine.length} días</div>
+                    </div>
+                </div>
+            </div>
+            
+            ${routine.map((day, index) => `
+                <div style="background: var(--glass-bg); padding: var(--spacing-md); border-radius: var(--radius-md); border: 1px solid var(--glass-border);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-sm);">
+                        <h4 style="margin: 0; color: var(--text-primary); font-size: 1rem;">${day.day}</h4>
+                        <span style="background: ${day.focus === 'Descanso' ? 'var(--glass-bg)' : 'rgba(102, 126, 234, 0.1)'}; color: var(--text-primary); padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">${day.focus}</span>
+                    </div>
+                    <div style="display: grid; gap: var(--spacing-xs);">
+                        ${day.exercises.map((exercise, i) => `
+                            <div style="display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-xs) 0;">
+                                <div style="width: 6px; height: 6px; background: var(--accent-purple); border-radius: 50%; flex-shrink: 0;"></div>
+                                <span style="color: var(--text-primary); font-size: 0.9rem;">${exercise}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+
+    showModal(`Rutina de ${user.name}`, content, [
+        {
+            text: 'Cambiar Plan',
+            class: 'btn-secondary',
+            onClick: () => {
+                // Cerrar modal actual y abrir edición
+                document.querySelector('.modal-overlay')?.remove();
+                setTimeout(() => editUserAdmin(userId), 100);
+            }
+        },
+        {
+            text: 'Cerrar',
+            class: 'btn-primary',
+            onClick: () => { }
+        }
+    ]);
+}
+
+function deleteUser(userId) {
+    const user = adminUsers.find(u => u.id === userId);
+
+    showConfirm(
+        '¿Eliminar Usuario?',
+        `¿Estás seguro de que deseas eliminar a <strong>${user.name}</strong>? Esta acción no se puede deshacer.`,
+        () => {
+            const index = adminUsers.findIndex(u => u.id === userId);
+            adminUsers.splice(index, 1);
+
+            showSuccess('Usuario Eliminado',
+                `${user.name} ha sido eliminado del sistema.`);
+
+            setTimeout(() => {
+                navigateToAdmin('users');
+            }, 1500);
+        }
+    );
 }
 
 // ==================== INITIALIZATION ====================
